@@ -1,7 +1,6 @@
 package com.example.pamyatki.ui.screens
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -12,27 +11,31 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.example.pamyatki.ui.components.AddPamyatka
 import com.example.pamyatki.ui.components.PamyatkiList
 import com.example.pamyatki.ui.components.Toolbar
+import com.example.pamyatki.ui.components.onItemClickHandle
 
 @ExperimentalMaterial3Api
 @Composable
-fun MainScreen(isOnMainScreen: Boolean, OnBackPressedCallback: () -> Unit) {
-    val items = remember { mutableStateListOf<String>() }
+fun MainScreen(navController: NavHostController, addPamyatka: AddPamyatka) {
     Scaffold(
         topBar = {
             Toolbar(
-                isOnMainScreen = isOnMainScreen,
-                OnBackPressedCallback = OnBackPressedCallback,
-                OnAddItemCallback = {
-                    items.add("Pamyatka ${items.size + 1}")
-                }
-            ) },
+                isOnMainScreen = true,
+                navController = navController,
+                OnAddItemCallback = { navController.navigate("add_note") },
+                { }, "", ""
+            )
+        },
         content = { paddingValues ->
             Column(modifier = Modifier.padding(paddingValues)) {
                 Spacer(modifier = Modifier.padding(top = 30.dp))
                 Text(text = "Welcome to Pamyatki: RESURRECTED")
-                PamyatkiList(items)
+                PamyatkiList(onItemClick = { theme, text ->
+                    onItemClickHandle(navController, theme, text)
+                }, addPamyatka)
             }
         }
     )

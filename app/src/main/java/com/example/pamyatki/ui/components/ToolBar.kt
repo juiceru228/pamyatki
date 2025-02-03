@@ -11,46 +11,55 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Applier
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavController
 
 @ExperimentalMaterial3Api
 @Composable
 fun Toolbar(isOnMainScreen: Boolean,
-            OnBackPressedCallback: () -> Unit,
-            OnAddItemCallback: () -> Unit
+            navController: NavController,
+            OnAddItemCallback: () -> Unit,
+            onSaveCallback: () -> Unit = {},
+            theme: String, text: String,
 ) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
-            titleContentColor = MaterialTheme.colorScheme.primary,
+            titleContentColor = MaterialTheme.colorScheme.primary
         ),
         title = {
             Text("Pamyatki")
         },
         navigationIcon = {
-            IconButton(onClick = {
-                if (isOnMainScreen){
-                    OnBackPressedCallback()
+            if (!isOnMainScreen) {
+                IconButton(onClick = {
+                    if (navController.previousBackStackEntry != null) {
+                        navController.popBackStack()
+                    }
+                }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Go Back"
+                    )
                 }
-                else{
-                    /*nothing*/
-                }
-            }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Go back"
-                )
             }
         },
         actions = {
-            TextButton(onClick = OnAddItemCallback) {
-                Text("Add Pamyatka")
-            }
-            IconButton(onClick = {/* do something */}) {
-                Icon(
-                    imageVector = Icons.Filled.Menu,
-                    contentDescription = "do something"
-                )
+            if (isOnMainScreen) {
+                TextButton(onClick = OnAddItemCallback) {
+                    Text("Add Pamyatka")
+                }
+                IconButton(onClick = { /* Do something */ }) {
+                    Icon(
+                        imageVector = Icons.Filled.Menu,
+                        contentDescription = "Menu"
+                    )
+                }
+            } else if (theme.isNotBlank() && text.isNotBlank()) {
+                TextButton(onClick = { onSaveCallback() }) {
+                    Text("Save")
+                }
             }
         }
     )

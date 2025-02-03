@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.example.pamyatki.ui.components.AppNavigation
 import com.example.pamyatki.ui.components.BackPressHandler
 import com.example.pamyatki.ui.screens.MainScreen
 import com.example.pamyatki.ui.theme.PamyatkiTheme
@@ -24,13 +25,15 @@ class MainActivity : ComponentActivity() {
                 moveTaskToBack(true)
             }
         })
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                backPressHandler.handleBackPress(this@MainActivity)
+            }
+        })
         setContent {
             var isOnMainScreen by remember { mutableStateOf(true) }
             PamyatkiTheme {
-                MainScreen(
-                    isOnMainScreen = isOnMainScreen,
-                    OnBackPressedCallback = { backPressHandler.handleBackPress(this) }
-                )
+                AppNavigation()
             }
         }
     }
