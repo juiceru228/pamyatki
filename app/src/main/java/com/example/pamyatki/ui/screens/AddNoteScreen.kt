@@ -1,14 +1,11 @@
 package com.example.pamyatki.ui.screens
 
-import androidx.activity.OnBackPressedCallback
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -18,25 +15,43 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.pamyatki.ui.components.AddPamyatka
+import com.example.pamyatki.ui.components.PamyatkaDbDao
+import com.example.pamyatki.ui.components.PamyatkaDbEntity
 import com.example.pamyatki.ui.components.Toolbar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @ExperimentalMaterial3Api
 @Composable
-fun AddNoteScreen(navController: NavHostController, AddPamyatka: AddPamyatka) {
+fun AddNoteScreen(navController: NavHostController, dao: PamyatkaDbDao) {
     var theme by remember { mutableStateOf("") }
     var text by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
+    suspend fun  handleSaveClick(){
+        try {
+            val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            val currentDate = formatter.format(System.currentTimeMillis())
 
-    fun  handleSaveClick(){
-        AddPamyatka.addNote(theme, text)
-        theme = ""
-        text = ""
-        navController.popBackStack()
+            withContext(Dispatchers.IO) {
+                dao.insert(PamyatkaDbEntity(theme = theme, text = text, date = currentDate))
+            }
+
+            withContext(Dispatchers.Main) {
+                theme = ""
+                text = ""
+                navController.popBackStack()
+            }
+        } catch (e: Exception) {
+            Log.e("AddNoteScreen", "Error saving note", e)
+        }
     }
 
     Scaffold(
@@ -45,7 +60,9 @@ fun AddNoteScreen(navController: NavHostController, AddPamyatka: AddPamyatka) {
                 isOnMainScreen = false,
                 navController = navController,
                 OnAddItemCallback = { },
-                onSaveCallback = { handleSaveClick() },
+                onSaveCallback = { coroutineScope.launch {
+                    handleSaveClick()
+                } },
                 theme, text
             )
         },

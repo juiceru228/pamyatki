@@ -7,19 +7,17 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.pamyatki.ui.components.AddPamyatka
+import com.example.pamyatki.ui.components.PamyatkiDatabase
 import com.example.pamyatki.ui.components.PamyatkiList
 import com.example.pamyatki.ui.components.Toolbar
 import com.example.pamyatki.ui.components.onItemClickHandle
 
 @ExperimentalMaterial3Api
 @Composable
-fun MainScreen(navController: NavHostController, addPamyatka: AddPamyatka) {
+fun MainScreen(navController: NavHostController, database: PamyatkiDatabase) {
     Scaffold(
         topBar = {
             Toolbar(
@@ -35,7 +33,7 @@ fun MainScreen(navController: NavHostController, addPamyatka: AddPamyatka) {
                 Text(text = "Welcome to Pamyatki: RESURRECTED")
                 PamyatkiList(onItemClick = { theme, text ->
                     onItemClickHandle(navController, theme, text)
-                }, addPamyatka)
+                }, database.getDao())
             }
         }
     )

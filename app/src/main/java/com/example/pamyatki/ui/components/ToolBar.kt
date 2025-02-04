@@ -20,8 +20,8 @@ import androidx.navigation.NavController
 fun Toolbar(isOnMainScreen: Boolean,
             navController: NavController,
             OnAddItemCallback: () -> Unit,
-            onSaveCallback: () -> Unit = {},
-            theme: String, text: String,
+            onSaveCallback: () -> Unit,
+            theme: String, text: String
 ) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
