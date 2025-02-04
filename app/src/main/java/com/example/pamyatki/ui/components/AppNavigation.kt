@@ -26,14 +26,18 @@ fun AppNavigation(database: PamyatkiDatabase) {
         composable("add_note") {
             AddNoteScreen(navController, database.getDao())
         }
-        composable("note_info/{theme}/{text}",
+        composable("note_info/{id}/{theme}/{text}/{date}",
             arguments = listOf(
+                navArgument("id") { type = NavType.IntType },
                 navArgument("theme") { type = NavType.StringType },
-                navArgument("text") { type = NavType.StringType }
+                navArgument("text") { type = NavType.StringType },
+                navArgument("date") { type = NavType.StringType }
             )) {backStackEntry ->
+            val id = backStackEntry.arguments?.getInt("id")?: 0
             val theme = backStackEntry.arguments?.getString("theme") ?: ""
             val text = backStackEntry.arguments?.getString("text") ?: ""
-            NoteScreen(navController, theme, text)
+            val date = backStackEntry.arguments?.getString("date") ?: ""
+            NoteScreen(navController, id, theme, text, date, database.getDao())
         }
     }
 }

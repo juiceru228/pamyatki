@@ -29,10 +29,9 @@ fun MainScreen(navController: NavHostController, database: PamyatkiDatabase) {
         },
         content = { paddingValues ->
             Column(modifier = Modifier.padding(paddingValues)) {
-                Spacer(modifier = Modifier.padding(top = 30.dp))
-                Text(text = "Welcome to Pamyatki: RESURRECTED")
-                PamyatkiList(onItemClick = { theme, text ->
-                    onItemClickHandle(navController, theme, text)
+                Spacer(modifier = Modifier.padding(top = 15.dp))
+                PamyatkiList(onItemClick = { id, theme, text, date ->
+                    onItemClickHandle(navController, id, theme, text, date)
                 }, database.getDao())
             }
         }

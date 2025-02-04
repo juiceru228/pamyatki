@@ -1,7 +1,8 @@
 package com.example.pamyatki.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -9,7 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -18,31 +18,42 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 @Composable
-fun PamyatkiList(onItemClick: (String, String) -> Unit, dao: PamyatkaDbDao){
+fun PamyatkiList(onItemClick: (Int, String, String, String) -> Unit, dao: PamyatkaDbDao){
     val pamyatki = dao.getAllPamyatki().collectAsState(initial = emptyList())
     val coroutineScope = rememberCoroutineScope()
-    val openDialog = remember { mutableStateOf(false) }
     var selectedPamyatka = remember { mutableStateOf<PamyatkaDbEntity?>(null) }
     LazyColumn( modifier = Modifier.fillMaxWidth()) {
         items(pamyatki.value, key = { it.theme }) { pamyatka ->
-            Row {
-                Text(
-                    fontSize = 30.sp,
-                    text = pamyatka.theme,
-                    modifier = Modifier.padding(8.dp).weight(1f).clickable { onItemClick(pamyatka.theme, pamyatka.text) }
-                )
-                TextButton(onClick = {selectedPamyatka.value = pamyatka}) {
-                    Text("Remove")
+            Box(modifier = Modifier.clickable { onItemClick(pamyatka.id, pamyatka.theme, pamyatka.text, pamyatka.date) }.fillMaxWidth())
+            {
+
+                Row() {
+                    Column( modifier = Modifier.weight(1f) ){
+                        Text(
+                            fontSize = 30.sp,
+                            text = pamyatka.theme,
+                            modifier = Modifier.padding(8.dp)
+                        )
+                        Text(
+                            fontSize = 10.sp,
+                            text = pamyatka.date,
+                            modifier = Modifier.padding(8.dp),
+                            color = Color.White.copy(alpha = 0.5f)
+                        )
+                    }
+
+                    TextButton(
+                        onClick = { selectedPamyatka.value = pamyatka }
+                    ) {
+                        Text("Remove")
+                    }
                 }
             }
         }
@@ -79,8 +90,8 @@ fun PamyatkiList(onItemClick: (String, String) -> Unit, dao: PamyatkaDbDao){
     }
 }
 
-fun onItemClickHandle(navController: NavHostController, theme: String, text: String){
-    navController.navigate("note_info/$theme/$text")
+fun onItemClickHandle(navController: NavHostController, id: Int, theme: String, text: String, date: String){
+    navController.navigate("note_info/$id/$theme/$text/$date")
 }
 
 

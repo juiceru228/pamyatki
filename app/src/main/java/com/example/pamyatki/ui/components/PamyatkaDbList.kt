@@ -8,6 +8,7 @@ import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.RoomDatabase
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -17,6 +18,9 @@ interface PamyatkaDbDao {
 
     @Delete
     suspend fun delete(pamyatkaDbList: PamyatkaDbEntity)
+
+    @Update
+    suspend fun update(pamyatkaDbEntity: PamyatkaDbEntity)
 
     @Query("SELECT * FROM PamyatkiList")
     fun getAllPamyatki(): Flow<List<PamyatkaDbEntity>>
