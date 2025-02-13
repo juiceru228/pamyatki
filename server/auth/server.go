@@ -1,4 +1,4 @@
-package server
+package main
 
 import (
 	"context"
@@ -6,9 +6,10 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/USERNAME/pamyatki/server/auth/gen/go/pamyatki.sso.v1"
+	pb "auth/gen/go/pamyatki.sso.v1"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 type authServer struct {
@@ -33,7 +34,7 @@ func main() {
 
 	server := grpc.NewServer()
 	pb.RegisterAuthServer(server, &authServer{})
-
+	reflection.Register(server)
 	fmt.Println("Auth service running on port 8080")
 	if err := server.Serve(listener); err != nil {
 		log.Fatalf("Failed to serve: %v", err)

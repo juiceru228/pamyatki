@@ -11,10 +11,7 @@ services:
     ports:
       - "8080:8080"
   postgres:
-    restart: always
-    build:
-      context: ./database
-      dockerfile: Dockerfile
+    image: postgres
     ports:
       - 5432:5432
     environment:
@@ -22,7 +19,7 @@ services:
       - POSTGRES_PASSWORD=postgres_password
       - POSTGRES_DB=pamyatki
     volumes:
-      - ./server/database:/docker-entrypoint-initdb.d
+      - ./database/init:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
